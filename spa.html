@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SPA - React Apps</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+</head>
+<body>
+  <h1>Single Page Application - React</h1>
+  <a href="index.html">Home</a>
+
+  <nav>
+    <button onclick="showApp('pizzaFilter')">Pizza Filter</button>
+    <button onclick="showApp('calculator')">Calculator</button>
+  </nav>
+
+  <div id="spa-root"></div>
+
+  <script src="react/app1/dist/app1.js"></script>
+  <script src="react/app2/dist/app2.js"></script>
+
+  <script>
+    let currentApp = 'pizzaFilter';
+
+    function showApp(name) {
+      currentApp = name;
+      renderSPA();
+    }
+
+    function renderSPA() {
+      const rootEl = document.getElementById('spa-root');
+      if (currentApp === 'pizzaFilter') {
+        App1.mount(rootEl);
+      } else {
+        App2.mount(rootEl);
+      }
+    }
+
+    renderSPA();
+  </script>
+</body>
+</html>

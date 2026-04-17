@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JavaScript CRUD - Pizza</title>
+  <style>
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 4px; }
+    form { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>JavaScript CRUD - Pizza (Array)</h1>
+  <a href="index.html">Home</a>
+
+  <table id="pizzaTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Vegetarian</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Add / Edit Pizza</h2>
+  <form id="pizzaForm">
+    <input type="hidden" id="editIndex">
+    <label>
+      Name:
+      <input type="text" id="pname" required>
+    </label>
+    <label>
+      Category:
+      <select id="categoryname">
+        <option value="page">page</option>
+        <option value="nobleman">nobleman</option>
+        <option value="king">king</option>
+        <option value="knight">knight</option>
+      </select>
+    </label>
+    <label>
+      Vegetarian:
+      <input type="checkbox" id="vegetarian">
+    </label>
+    <button type="submit">Save</button>
+  </form>
+
+  <script src="js/javascript-crud.js"></script>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>React CRUD - Pizza</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 4px; }
+  </style>
+</head>
+<body>
+  <h1>React CRUD - Pizza (Array)</h1>
+  <a href="index.html">Home</a>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const initialPizzas = [
+      { pname: "Áfonyás", categoryname: "king", vegetarian: 0 },
+      { pname: "Csupa sajt", categoryname: "knight", vegetarian: 1 },
+      { pname: "Gombás", categoryname: "page", vegetarian: 1 }
+    ];
+
+    function PizzaApp() {
+      const [pizzas, setPizzas] = React.useState(initialPizzas);
+      const [form, setForm] = React.useState({ pname: "", categoryname: "king", vegetarian: false });
+      const [editIndex, setEditIndex] = React.useState(null);
+
+      const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setForm(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const data = {
+          pname: form.pname,
+          categoryname: form.categoryname,
+          vegetarian: form.vegetarian ? 1 : 0
+        };
+        if (editIndex === null) {
+          setPizzas(prev => [...prev, data]);
+        } else {
+          setPizzas(prev => prev.map((p, i) => i === editIndex ? data : p));
+        }
+        setForm({ pname: "", categoryname: "king", vegetarian: false });
+        setEditIndex(null);
+      };
+
+      const handleEdit = (index) => {
+        const p = pizzas[index];
+        setForm({
+          pname: p.pname,
+          categoryname: p.categoryname,
+          vegetarian: !!p.vegetarian
+        });
+        setEditIndex(index);
+      };
+
+      const handleDelete = (index) => {
+        setPizzas(prev => prev.filter((_, i) => i !== index));
+      };
+
+      return (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Vegetarian</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pizzas.map((p, i) => (
+                <tr key={i}>
+                  <td>{p.pname}</td>
+                  <td>{p.categoryname}</td>
+                  <td>{p.vegetarian ? "Yes" : "No"}</td>
+                  <td>
+                    <button onClick={() => handleEdit(i)}>Edit</button>
+                    <button onClick={() => handleDelete(i)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2>{editIndex === null ? "Add Pizza" : "Edit Pizza"}</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              name="pname"
+              value={form.pname}
+              onChange={handleChange}
+              placeholder="Name"
+              required
+            />
+            <select
+              name="categoryname"
+              value={form.categoryname}
+              onChange={handleChange}
+            >
+              <option value="page">page</option>
+              <option value="nobleman">nobleman</option>
+              <option value="king">king</option>
+              <option value="knight">knight</option>
+            </select>
+            <label>
+              Vegetarian
+              <input
+                type="checkbox"
+                name="vegetarian"
+                checked={form.vegetarian}
+                onChange={handleChange}
+              />
+            </label>
+            <button type="submit">Save</button>
+          </form>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<PizzaApp />);
+  </script>
+</body>
+</html>

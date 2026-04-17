@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fetch API CRUD - Pizza</title>
+  <style>
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Fetch API CRUD - Pizza (Server)</h1>
+  <a href="index.html">Home</a>
+
+  <table id="pizzaTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Vegetarian</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>Add / Edit Pizza</h2>
+  <form id="pizzaForm">
+    <input type="hidden" id="editMode">
+    <label>Name: <input type="text" id="pname" required></label>
+    <label>
+      Category:
+      <select id="categoryname">
+        <option value="page">page</option>
+        <option value="nobleman">nobleman</option>
+        <option value="king">king</option>
+        <option value="knight">knight</option>
+      </select>
+    </label>
+    <label>Vegetarian: <input type="checkbox" id="vegetarian"></label>
+    <button type="submit">Save</button>
+  </form>
+
+  <script>
+    const API_URL = 'php/pizza_api.php';
+
+    const tbody = document.querySelector("#pizzaTable tbody");
+    const form = document.getElementById("pizzaForm");
+    const editModeInput = document.getElementById("editMode");
+    const pnameInput = document.getElementById("pname");
+    const categoryInput = document.getElementById("categoryname");
+    const vegetarianInput = document.getElementById("vegetarian");
+
+    async function loadPizzas() {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      tbody.innerHTML = "";
+      data.forEach(p => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.pname}</td>
+          <td>${p.categoryname}</td>
+          <td>${p.vegetarian == 1 ? "Yes" : "No"}</td>
+          <td>
+            <button onclick="editPizza('${p.pname}')">Edit</button>
+            <button onclick="deletePizza('${p.pname}')">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.editPizza = async function(pname) {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      const p = data.find(x => x.pname === pname);
+      if (!p) return;
+      editModeInput.value = "1";
+      pnameInput.value = p.pname;
+      pnameInput.disabled = true;
+      categoryInput.value = p.categoryname;
+      vegetarianInput.checked = p.vegetarian == 1;
+    };
+
+    window.deletePizza = async function(pname) {
+      await fetch(API_URL + '?pname=' + encodeURIComponent(pname), {
+        method: 'DELETE'
+      });
+      loadPizzas();
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        pname: pnameInput.value,
+        categoryname: categoryInput.value,
+        vegetarian: vegetarianInput.checked ? 1 : 0
+      };
+      const method = editModeInput.value ? 'PUT' : 'POST';
+      await fetch(API_URL, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      pnameInput.disabled = false;
+      form.reset();
+      editModeInput.value = "";
+      loadPizzas();
+    });
+
+    loadPizzas();
+  </script>
+</body>
+</html>

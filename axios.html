@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Axios CRUD - Pizza</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 4px; }
+  </style>
+</head>
+<body>
+  <h1>Axios CRUD - Pizza (Server)</h1>
+  <a href="index.html">Home</a>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const API_URL = 'php/pizza_api.php';
+
+    function AxiosPizzaApp() {
+      const [pizzas, setPizzas] = React.useState([]);
+      const [form, setForm] = React.useState({ pname: "", categoryname: "king", vegetarian: false });
+      const [editMode, setEditMode] = React.useState(false);
+
+      const load = async () => {
+        const res = await axios.get(API_URL);
+        setPizzas(res.data);
+      };
+
+      React.useEffect(() => { load(); }, []);
+
+      const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setForm(prev => ({
+          ...prev,
+          [name]: type === "checkbox" ? checked : value
+        }));
+      };
+
+      const handleSubmit = async (e) => {
+        e.preventDefault();
+        const payload = {
+          pname: form.pname,
+          categoryname: form.categoryname,
+          vegetarian: form.vegetarian ? 1 : 0
+        };
+        if (editMode) {
+          await axios.put(API_URL, payload);
+        } else {
+          await axios.post(API_URL, payload);
+        }
+        setForm({ pname: "", categoryname: "king", vegetarian: false });
+        setEditMode(false);
+        load();
+      };
+
+      const editPizza = (p) => {
+        setForm({
+          pname: p.pname,
+          categoryname: p.categoryname,
+          vegetarian: p.vegetarian == 1
+        });
+        setEditMode(true);
+      };
+
+      const deletePizza = async (pname) => {
+        await axios.delete(API_URL + '?pname=' + encodeURIComponent(pname));
+        load();
+      };
+
+      return (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Vegetarian</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pizzas.map((p, i) => (
+                <tr key={i}>
+                  <td>{p.pname}</td>
+                  <td>{p.categoryname}</td>
+                  <td>{p.vegetarian == 1 ? "Yes" : "No"}</td>
+                  <td>
+                    <button onClick={() => editPizza(p)}>Edit</button>
+                    <button onClick={() => deletePizza(p.pname)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h2>{editMode ? "Edit Pizza" : "Add Pizza"}</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              name="pname"
+              value={form.pname}
+              onChange={handleChange}
+              placeholder="Name"
+              required
+              disabled={editMode}
+            />
+            <select
+              name="categoryname"
+              value={form.categoryname}
+              onChange={handleChange}
+            >
+              <option value="page">page</option>
+              <option value="nobleman">nobleman</option>
+              <option value="king">king</option>
+              <option value="knight">knight</option>
+            </select>
+            <label>
+              Vegetarian
+              <input
+                type="checkbox"
+                name="vegetarian"
+                checked={form.vegetarian}
+                onChange={handleChange}
+              />
+            </label>
+            <button type="submit">Save</button>
+          </form>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<AxiosPizzaApp />);
+  </script>
+</body>
+</html>
