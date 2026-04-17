@@ -6,13 +6,12 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 4px; }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+<div class="container">
   <h1>React CRUD - Pizza (Array)</h1>
-  <a href="index.html">Home</a>
+  <a href="index.html" class="back-link">Home</a>
   <div id="root"></div>
 
   <script type="text/babel">
@@ -125,5 +124,6 @@
     const root = ReactDOM.createRoot(document.getElementById("root"));
     root.render(<PizzaApp />);
   </script>
+</div>
 </body>
 </html>

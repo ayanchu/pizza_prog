@@ -8,24 +8,23 @@ function CalculatorApp() {
     React.createElement('input', {
       type: 'number',
       value: num1,
-      onChange: function(e) { setNum1(Number(e.target.value)); }
+      onChange: function (e) { setNum1(Number(e.target.value)); }
     }),
     React.createElement('input', {
       type: 'number',
       value: num2,
-      onChange: function(e) { setNum2(Number(e.target.value)); }
+      onChange: function (e) { setNum2(Number(e.target.value)); }
     }),
     React.createElement('br'),
-    React.createElement('button', { onClick: function() { setResult(num1 + num2); } }, '+'),
-    React.createElement('button', { onClick: function() { setResult(num1 - num2); } }, '-'),
+    React.createElement('button', { onClick: function () { setResult(num1 + num2); } }, '+'),
+    React.createElement('button', { onClick: function () { setResult(num1 - num2); } }, '-'),
     React.createElement('div', null, 'Result: ', result)
   );
 }
 
-// Global variable for App2
 window.App2 = {
   root: null,
-  mount: function(el) {
+  mount: function (el) {
     if (this.root) {
       this.root.unmount();
     }

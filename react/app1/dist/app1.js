@@ -16,20 +16,19 @@ function PizzaFilterApp() {
       type: 'text',
       placeholder: 'Filter by name...',
       value: filter,
-      onChange: function(e) { setFilter(e.target.value); }
+      onChange: function (e) { setFilter(e.target.value); }
     }),
     React.createElement('ul', null,
-      filtered.map(function(p, i) {
+      filtered.map(function (p, i) {
         return React.createElement('li', { key: i }, p.name + ' (' + p.category + ')');
       })
     )
   );
 }
 
-// Global variable for App1
 window.App1 = {
   root: null,
-  mount: function(el) {
+  mount: function (el) {
     if (this.root) {
       this.root.unmount();
     }

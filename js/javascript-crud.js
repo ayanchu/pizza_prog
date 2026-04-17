@@ -1,9 +1,9 @@
 let pizzas = [
-  { pname: "Áfonyás",   categoryname: "king",   vegetarian: 0 },
-  { pname: "Csupa sajt",categoryname: "knight", vegetarian: 1 },
-  { pname: "Gombás",    categoryname: "page",   vegetarian: 1 },
-  { pname: "Hawaii",    categoryname: "nobleman", vegetarian: 0 },
-  { pname: "Kétszínű",  categoryname: "knight", vegetarian: 0 }
+  { pname: "Áfonyás", categoryname: "king", vegetarian: 0 },
+  { pname: "Csupa sajt", categoryname: "knight", vegetarian: 1 },
+  { pname: "Gombás", categoryname: "page", vegetarian: 1 },
+  { pname: "Hawaii", categoryname: "nobleman", vegetarian: 0 },
+  { pname: "Kétszínű", categoryname: "knight", vegetarian: 0 }
 ];
 
 const tbody = document.querySelector('#pizzaTable tbody');
@@ -45,7 +45,7 @@ function deletePizza(index) {
 
 form.addEventListener('submit', function (e) {
   e.preventDefault();
-  
+
   const pData = {
     pname: pnameInput.value,
     categoryname: categoryInput.value,
@@ -59,10 +59,9 @@ form.addEventListener('submit', function (e) {
   } else {
     pizzas.push(pData);
   }
-  
+
   form.reset();
   renderTable();
 });
 
-// Initial render
 renderTable();

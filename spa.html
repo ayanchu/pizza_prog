@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <title>SPA - React Apps</title>
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
 </head>
 <body>
+<div class="container">
   <h1>Single Page Application - React</h1>
-  <a href="index.html">Home</a>
+  <a href="index.html" class="back-link">Home</a>
 
   <nav>
     <button onclick="showApp('pizzaFilter')">Pizza Filter</button>
@@ -39,5 +41,6 @@
 
     renderSPA();
   </script>
+</div>
 </body>
 </html>
