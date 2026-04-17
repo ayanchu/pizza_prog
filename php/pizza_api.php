@@ -8,9 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     exit;
 }
 
-$dsn = "mysql:host=sql100.infinityfree.com;dbname=if0_41664185_pizza_db;charset=utf8";
-$user = "if0_41664185";
-$pass = "F3Tl5XkMRdRJ";
+$dsn = "mysql:host=localhost;dbname=dbname;charset=utf8"; // WILL BE ADDED IN PRODUCTION
+$user = "username"; // WILL BE ADDED IN PRODUCTION
+$pass = "pass"; // WILL BE ADDED IN PRODUCTION
 
 try {
     $dbh = new PDO($dsn, $user, $pass, [
