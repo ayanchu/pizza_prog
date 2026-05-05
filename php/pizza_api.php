@@ -8,9 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {
     exit;
 }
 
-$dsn = "mysql:host=localhost;dbname=dbname;charset=utf8"; // WILL BE ADDED IN PRODUCTION
-$user = "username"; // WILL BE ADDED IN PRODUCTION
-$pass = "pass"; // WILL BE ADDED IN PRODUCTION
+$dsn = "mysql:host=localhost;dbname=pizza;charset=utf8"; // WILL BE ADDED IN PRODUCTION
+$user = "root"; // WILL BE ADDED IN PRODUCTION
+$pass = "root"; // WILL BE ADDED IN PRODUCTION
 
 try {
     $dbh = new PDO($dsn, $user, $pass, [

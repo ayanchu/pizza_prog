@@ -2,67 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>React CRUD - Pizza</title>
+  <title>React CRUD - Pizza Database</title>
+
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="container">
-  <h1>React CRUD - Pizza (Array)</h1>
+  <h1>React CRUD - Pizza Database</h1>
   <a href="index.html" class="back-link">Home</a>
+
   <div id="root"></div>
 
   <script type="text/babel">
-    const initialPizzas = [
-      { pname: "Áfonyás", categoryname: "king", vegetarian: 0 },
-      { pname: "Csupa sajt", categoryname: "knight", vegetarian: 1 },
-      { pname: "Gombás", categoryname: "page", vegetarian: 1 }
-    ];
+    const API_URL = "php/pizza_api.php";
 
     function PizzaApp() {
-      const [pizzas, setPizzas] = React.useState(initialPizzas);
-      const [form, setForm] = React.useState({ pname: "", categoryname: "king", vegetarian: false });
+      const [pizzas, setPizzas] = React.useState([]);
+      const [form, setForm] = React.useState({
+        pname: "",
+        categoryname: "king",
+        vegetarian: false
+      });
       const [editIndex, setEditIndex] = React.useState(null);
+      const [message, setMessage] = React.useState("");
+
+      const loadPizzas = () => {
+        fetch(API_URL)
+          .then(res => res.json())
+          .then(data => {
+            console.log("Database data:", data);
+
+            if (Array.isArray(data)) {
+              setPizzas(data);
+              setMessage("");
+            } else {
+              setMessage("API error: " + JSON.stringify(data));
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            setMessage("Cannot load data from database.");
+          });
+      };
+
+      React.useEffect(() => {
+        loadPizzas();
+      }, []);
 
       const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setForm(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+
+        setForm(prev => ({
+          ...prev,
+          [name]: type === "checkbox" ? checked : value
+        }));
       };
 
       const handleSubmit = (e) => {
         e.preventDefault();
+
         const data = {
           pname: form.pname,
           categoryname: form.categoryname,
           vegetarian: form.vegetarian ? 1 : 0
         };
-        if (editIndex === null) {
-          setPizzas(prev => [...prev, data]);
-        } else {
-          setPizzas(prev => prev.map((p, i) => i === editIndex ? data : p));
-        }
-        setForm({ pname: "", categoryname: "king", vegetarian: false });
-        setEditIndex(null);
+
+        fetch(API_URL, {
+          method: editIndex === null ? "POST" : "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        })
+          .then(res => res.json())
+          .then(result => {
+            console.log(result);
+
+            setForm({
+              pname: "",
+              categoryname: "king",
+              vegetarian: false
+            });
+
+            setEditIndex(null);
+            loadPizzas();
+          })
+          .catch(err => {
+            console.error(err);
+            setMessage("Save failed.");
+          });
       };
 
       const handleEdit = (index) => {
         const p = pizzas[index];
+
         setForm({
           pname: p.pname,
           categoryname: p.categoryname,
-          vegetarian: !!p.vegetarian
+          vegetarian: p.vegetarian == 1
         });
+
         setEditIndex(index);
       };
 
       const handleDelete = (index) => {
-        setPizzas(prev => prev.filter((_, i) => i !== index));
+        const pizza = pizzas[index];
+
+        if (!confirm("Delete " + pizza.pname + "?")) {
+          return;
+        }
+
+        fetch(API_URL + "?pname=" + encodeURIComponent(pizza.pname), {
+          method: "DELETE"
+        })
+          .then(res => res.json())
+          .then(result => {
+            console.log(result);
+            loadPizzas();
+          })
+          .catch(err => {
+            console.error(err);
+            setMessage("Delete failed.");
+          });
+      };
+
+      const cancelEdit = () => {
+        setForm({
+          pname: "",
+          categoryname: "king",
+          vegetarian: false
+        });
+
+        setEditIndex(null);
       };
 
       return (
         <div>
+          {message && <p style={{ color: "red" }}>{message}</p>}
+
           <table>
             <thead>
               <tr>
@@ -72,12 +153,13 @@
                 <th>Actions</th>
               </tr>
             </thead>
+
             <tbody>
               {pizzas.map((p, i) => (
-                <tr key={i}>
+                <tr key={p.pname}>
                   <td>{p.pname}</td>
                   <td>{p.categoryname}</td>
-                  <td>{p.vegetarian ? "Yes" : "No"}</td>
+                  <td>{p.vegetarian == 1 ? "Yes" : "No"}</td>
                   <td>
                     <button onClick={() => handleEdit(i)}>Edit</button>
                     <button onClick={() => handleDelete(i)}>Delete</button>
@@ -88,26 +170,36 @@
           </table>
 
           <h2>{editIndex === null ? "Add Pizza" : "Edit Pizza"}</h2>
+
           <form onSubmit={handleSubmit}>
-            <input
-              name="pname"
-              value={form.pname}
-              onChange={handleChange}
-              placeholder="Name"
-              required
-            />
-            <select
-              name="categoryname"
-              value={form.categoryname}
-              onChange={handleChange}
-            >
-              <option value="page">page</option>
-              <option value="nobleman">nobleman</option>
-              <option value="king">king</option>
-              <option value="knight">knight</option>
-            </select>
             <label>
-              Vegetarian
+              Name:
+              <input
+                name="pname"
+                value={form.pname}
+                onChange={handleChange}
+                placeholder="Pizza name"
+                required
+                disabled={editIndex !== null}
+              />
+            </label>
+
+            <label>
+              Category:
+              <select
+                name="categoryname"
+                value={form.categoryname}
+                onChange={handleChange}
+              >
+                <option value="page">page</option>
+                <option value="nobleman">nobleman</option>
+                <option value="king">king</option>
+                <option value="knight">knight</option>
+              </select>
+            </label>
+
+            <label>
+              Vegetarian:
               <input
                 type="checkbox"
                 name="vegetarian"
@@ -115,7 +207,16 @@
                 onChange={handleChange}
               />
             </label>
-            <button type="submit">Save</button>
+
+            <button type="submit">
+              {editIndex === null ? "Add" : "Update"}
+            </button>
+
+            {editIndex !== null && (
+              <button type="button" onClick={cancelEdit}>
+                Cancel
+              </button>
+            )}
           </form>
         </div>
       );

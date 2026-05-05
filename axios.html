@@ -69,6 +69,8 @@
         load();
       };
 
+      console.log(setPizzas);
+
       return (
         <div>
           <table>
@@ -103,7 +105,6 @@
               onChange={handleChange}
               placeholder="Name"
               required
-              disabled={editMode}
             />
             <select
               name="categoryname"
